@@ -1,0 +1,1088 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Bulk Update API",
+    "description": "Orchestrate bulk updates against entities in the Platinum domain",
+    "contact": {
+      "email": "info@deltafs.co.uk"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/Delta-FS/BulkUpdate/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    }
+  ],
+  "tags": [
+    {
+      "name": "updates",
+      "description": "Bulk updates against the Platinum domain"
+    }
+  ],
+  "paths": {
+    "/updates": {
+      "get": {
+        "tags": [
+          "updates"
+        ],
+        "summary": "Search bulk updates",
+        "description": "Get a list of bulk updates \n",
+        "operationId": "searchBulkUpdates",
+        "parameters": [
+          {
+            "name": "$filter",
+            "in": "query",
+            "description": "[OData $filter expression](https://docs.oasis-open.org/odata/odata/v4.01/cs01/part2-url-conventions/odata-v4.01-cs01-part2-url-conventions.html#sec_SystemQueryOptionfilter) to filter the data returned.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bulk updates matching the filter option",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BulkUpdateRef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input parameter"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "read:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "read:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "updates"
+        ],
+        "summary": "Add a bulk update",
+        "description": "Adds a new bulk update - but does not execute it",
+        "operationId": "addBulkUpdate",
+        "requestBody": {
+          "description": "Bulk update details to add",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 13,
+                  "Message": "Bulk update has failed validation",
+                  "Target": "addBulkUpdate",
+                  "Details": [
+                    {
+                      "Code": 7,
+                      "Message": "Bulk update entity type must be supplied",
+                      "Target": "internal"
+                    },
+                    {
+                      "Code": 17,
+                      "Message": "Bulk update description must be supplied",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 578459
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Bulk update already exists with that id"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}": {
+      "get": {
+        "tags": [
+          "updates"
+        ],
+        "summary": "Get a bulk update",
+        "description": "Get a bulk update\n",
+        "operationId": "getBulkUpdate",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested bulk update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Bulk update not found"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "read:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "read:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "updates"
+        ],
+        "summary": "Modify a bulk update",
+        "description": "Modify bulk update details",
+        "operationId": "modifyBulkUpdate",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Bulk update details to modify",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkUpdateRef"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Bulk update modified"
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 13,
+                  "Message": "Bulk update has failed validation",
+                  "Target": "modifyBulkUpdate",
+                  "Details": [
+                    {
+                      "Code": 7,
+                      "Message": "Bulk update entity type must be supplied",
+                      "Target": "internal"
+                    },
+                    {
+                      "Code": 11,
+                      "Message": "Bulk update id is read-only and cannot be modified",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 578459
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bulk update not found"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "updates"
+        ],
+        "summary": "Delete a bulk update",
+        "operationId": "deleteBulkUpdate",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Bulk update deleted"
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Bulk update not found"
+          },
+          "409": {
+            "description": "Cannot delete bulk update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 13,
+                  "Message": "Bulk update could not be deleted at this time",
+                  "Target": "deleteBulkUpdate",
+                  "Details": [
+                    {
+                      "Code": 16,
+                      "Message": "Bulk update '616ab134-9a16-4009-aaf9-ead96fa5000e' is currently in progress",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 3478947
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}/updateset": {
+      "patch": {
+        "tags": [
+          "records"
+        ],
+        "summary": "Modify the set of records to bulk update",
+        "description": "Add to or modify the set of records to bulk update",
+        "operationId": "modifyBulkUpdateSet",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Patch the set of records to be updated.\n - New items in the update set will be appended\n - Existing items (determined by id) will be modified\n - Send an empty array - to reset the collection and remove all existing items",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityId"
+                }
+              },
+              "example": [
+                {
+                  "id": 1081,
+                  "token": "DQAAAAAAAAA="
+                },
+                {
+                  "id": 1084,
+                  "token": "DQAAAAAAAAA="
+                }
+              ]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 13,
+                  "Message": "Updatet set cannot be modified",
+                  "Target": "modifyBulkUpdateSet",
+                  "Details": [
+                    {
+                      "Code": 7,
+                      "Message": "Token is a required field",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 483928
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bulk update not found"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}/fieldset": {
+      "put": {
+        "tags": [
+          "fields"
+        ],
+        "summary": "Define the set of fields to bulk update",
+        "description": "Specify which fields to update and the values to update each field to",
+        "operationId": "addFieldSet",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Set of fields and updates to make",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FieldUpdate"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Fieldset updated"
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 13,
+                  "Message": "Bulk update field set has failed validation",
+                  "Target": "addFieldSet",
+                  "Details": [
+                    {
+                      "Code": 7,
+                      "Message": "DateInForce is required and cannot be null  ",
+                      "Target": "internal"
+                    },
+                    {
+                      "Code": 17,
+                      "Message": "MadeUpFieldName is not an updateable field for the PSD type",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 578459
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bulk update not found"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}/start": {
+      "post": {
+        "tags": [
+          "process"
+        ],
+        "summary": "Start processing the bulk update",
+        "description": "Start processing the bulk update",
+        "operationId": "startBulkUpdate",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Bulk update started"
+          },
+          "404": {
+            "description": "Bulk update not found"
+          },
+          "409": {
+            "description": "Cannot start the bulk update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 13,
+                  "Message": "Cannot start the bulk update",
+                  "Target": "startBulkUpdate",
+                  "Details": [
+                    {
+                      "Code": 3,
+                      "Message": "Bulk update is already in progress",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 73489
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}/stop": {
+      "post": {
+        "tags": [
+          "process"
+        ],
+        "summary": "Stop processing a bulk update",
+        "description": "Stop processing a bulk update that is in progress",
+        "operationId": "stopBulkUpdate",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Bulk update stopping"
+          },
+          "404": {
+            "description": "Bulk update not found"
+          },
+          "409": {
+            "description": "Cannot stop the bulk update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 19,
+                  "Message": "Cannot stop the bulk update",
+                  "Target": "startBulkUpdate",
+                  "Details": [
+                    {
+                      "Code": 5,
+                      "Message": "Bulk update is already complete",
+                      "Target": "internal"
+                    }
+                  ],
+                  "InnerError": {
+                    "Code": 678942
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "admin:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}/process/{shard_id}": {
+      "post": {
+        "tags": [
+          "internal"
+        ],
+        "summary": "Process the specified shard (internal use only)",
+        "description": "Processes the specified shard in the bulk update, operation is synchronous",
+        "operationId": "processShard",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          },
+          {
+            "name": "shard_id",
+            "in": "path",
+            "description": "ID of a shard",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "example": 2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shard processed"
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "Code": 27,
+                  "Message": "Shard '4' does not exist for bulk update '616ab134-9a16-4009-aaf9-ead96fa5000e'",
+                  "Target": "processShard"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2ClientCredentialsGrant": [
+              "internal:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/updates/{update_id}/results": {
+      "get": {
+        "tags": [
+          "results"
+        ],
+        "summary": "Get the results of the bulk update",
+        "description": "Get the results of the bulk update including any errors encountered when updating individual records\n",
+        "operationId": "getBulkUpdateResults",
+        "parameters": [
+          {
+            "name": "update_id",
+            "in": "path",
+            "description": "ID of an update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested bulk update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UpdateResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Bulk update not found"
+          }
+        },
+        "security": [
+          {
+            "oauth2ImplicitGrant": [
+              "read:updates"
+            ]
+          },
+          {
+            "oauth2ClientCredentialsGrant": [
+              "read:updates"
+            ]
+          },
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BulkUpdateRef": {
+        "required": [
+          "description",
+          "entityType",
+          "id",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "uniqueItems": true,
+            "type": "string",
+            "description": "Client side generated unique id",
+            "format": "uuid",
+            "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+          },
+          "entityType": {
+            "$ref": "#/components/schemas/EntityType"
+          },
+          "description": {
+            "type": "string",
+            "example": "My Bulk Update"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "processing",
+              "complete",
+              "stopping",
+              "stopped",
+              "errored"
+            ]
+          },
+          "statusMessage": {
+            "type": "string",
+            "example": "Bulk update error - an error occured when saving the bulk update"
+          }
+        }
+      },
+      "BulkUpdate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BulkUpdateRef"
+          },
+          {
+            "required": [
+              "updateSet"
+            ],
+            "type": "object",
+            "properties": {
+              "updateSet": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityId"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EntityId": {
+        "required": [
+          "id",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1081
+          },
+          "token": {
+            "type": "string",
+            "format": "byte"
+          }
+        }
+      },
+      "EntityType": {
+        "type": "string",
+        "example": "PSD",
+        "enum": [
+          "PSD",
+          "Invoice",
+          "Member",
+          "Scheme"
+        ]
+      },
+      "FieldUpdate": {
+        "required": [
+          "fieldName",
+          "newValue"
+        ],
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string",
+            "example": "ReportedDate"
+          },
+          "newValue": {
+            "type": "string",
+            "example": "2019-12-18"
+          }
+        }
+      },
+      "UpdateResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64",
+                "example": 1082
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "Success",
+                  "Failed"
+                ]
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Error": {
+        "title": "Error",
+        "required": [
+          "Code",
+          "Message"
+        ],
+        "type": "object",
+        "properties": {
+          "Code": {
+            "type": "string",
+            "description": "One of a server-defined set of error codes"
+          },
+          "Message": {
+            "type": "string",
+            "description": "A human-readable representation of the error"
+          },
+          "Target": {
+            "type": "string",
+            "description": "The target of the error"
+          },
+          "Details": {
+            "type": "array",
+            "description": "An array of details about specific errors that led to this reported error",
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          },
+          "InnerError": {
+            "$ref": "#/components/schemas/InnerError"
+          }
+        }
+      },
+      "InnerError": {
+        "title": "InnerError",
+        "type": "object",
+        "properties": {
+          "Code": {
+            "type": "string",
+            "description": "A more specific error code than was provided by the containing error"
+          },
+          "InnerError": {
+            "$ref": "#/components/schemas/InnerError"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "update_id": {
+        "name": "update_id",
+        "in": "path",
+        "description": "ID of an update",
+        "required": true,
+        "style": "simple",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "616ab134-9a16-4009-aaf9-ead96fa5000e"
+        }
+      },
+      "shard_id": {
+        "name": "shard_id",
+        "in": "path",
+        "description": "ID of a shard",
+        "required": true,
+        "style": "simple",
+        "explode": false,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2
+        }
+      }
+    },
+    "securitySchemes": {
+      "oauth2ImplicitGrant": {
+        "type": "oauth2",
+        "description": "OAuth2 Implicit Grant",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://login.microsoftonline.com/84017036-5349-4320-b3f9-1ff0d15b18a7/oauth2/authorize",
+            "scopes": {
+              "read:updates": "view bulk updates",
+              "admin:updates": "create and perform bulk updates"
+            }
+          }
+        }
+      },
+      "oauth2ClientCredentialsGrant": {
+        "type": "oauth2",
+        "description": "OAuth2 Client Credentials Grant",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://login.microsoftonline.com/84017036-5349-4320-b3f9-1ff0d15b18a7/oauth2/v2.0/token",
+            "scopes": {
+              "read:updates": "view bulk updates",
+              "admin:updates": "create and perform bulk updates"
+            }
+          }
+        }
+      },
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    }
+  }
+}
